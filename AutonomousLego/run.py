@@ -8,6 +8,8 @@ import runloop
 
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.E, port.A)
-    motor_pair.move(motor_pair.PAIR_1, 0, velocity=100)
+
     
 runloop.run(main())
+
+motor_pair.move(motor_pair.PAIR_1, 0, velocity=-100)

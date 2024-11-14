@@ -225,7 +225,7 @@ while True:
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
             if (object_name == 'person'):
                 found = True
-                pyb.execfile("turn.py");
+                pyb.execfile("run.py");
                 
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size

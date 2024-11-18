@@ -24,7 +24,8 @@ from threading import Thread
 import importlib.util
 
 from pyboard import Pyboard
-from MotionController import MotionController
+from motionController import MotionController
+
 device = '/dev/ttyACM0'
 baudrate = 115200
 wait = 0
@@ -208,6 +209,7 @@ while True:
 
     pyb = Pyboard(device, baudrate, wait)
     pyb.enter_raw_repl()
+    mc = MotionController()
     
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
@@ -224,10 +226,14 @@ while True:
 
             # Draw label
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
-            if (object_name == 'person'):
+            if (object_name == 'orange'):
                 found = True
-                pyb.execfile("turn.py");
-                
+                mc.moveForward(40)
+
+            elif (object_name == 'person'):
+                found = True
+                mc.stop()
+
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window

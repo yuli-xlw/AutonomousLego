@@ -7,9 +7,6 @@ import distance_sensor
 import runloop
 
 async def main():
-    motor_pair.pair(motor_pair.PAIR_1, port.E, port.A)
-    motor_pair.move(motor_pair.PAIR_1, 0, velocity=-100)
-
+    await motor.run_for_time(port.E, 1000, 200)
     
 runloop.run(main())
-

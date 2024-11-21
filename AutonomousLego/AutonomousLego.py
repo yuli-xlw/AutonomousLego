@@ -24,8 +24,8 @@ from threading import Thread
 import importlib.util
 
 from pyboard import Pyboard
-from motionController import MotionController
 
+from motionLego import MotionLego
 device = '/dev/ttyACM0'
 baudrate = 115200
 wait = 0
@@ -209,7 +209,8 @@ while True:
 
     pyb = Pyboard(device, baudrate, wait)
     pyb.enter_raw_repl()
-    mc = MotionController()
+
+    motionLego = MotionLego(pyb)
     
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
@@ -228,12 +229,10 @@ while True:
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
             if (object_name == 'orange'):
                 found = True
-                mc.moveForward(40)
-
+                motionLego.forward(360)
             elif (object_name == 'person'):
                 found = True
-                mc.stop()
-
+                motionLego.stop()
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window

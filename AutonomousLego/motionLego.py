@@ -10,6 +10,7 @@ wait= 0
 class MotionLego:
     pyboard = Pyboard(device, baudrate, wait)
     
+    steerAngle = 0
     imgCount = 0
 
     def __init__(self, Pyboard):
@@ -28,22 +29,22 @@ runloop.run(main())
         self.pyboard.exec(command) 
         
 
-    def send_run(self, pyboard, steering = 0, velocity = 360, acceleration = 1000):
-        iSteering = int(steering)
-        iVelocity = int(velocity)
-        iAcceleration = int(acceleration)
+    def send_run(self, speed, angle):
+        iSpeed = int(speed)
+        iAngle = int(angle)
         command = f"""\
-motor_pair.move(motor_pair.PAIR_1, steering={iSteering}, velocity={iVelocity}, acceleration={iAcceleration})
+motor_pair.move(motor_pair.PAIR_1, {iAngle}, velocity={iSpeed})
     """
         self.pyboard.exec(command)
         
-    def send_stop(self, pyboard):
+    def send_stop(self):
         command = f"""\
 motor_pair.stop(motor_pair.PAIR_1)
     """
+        self.pyboard.exec(command)
 
-    def forward(self,velocity):
-        self.send_run(self.pyboard,velocity=velocity)
+    def forward(self,speed):
+        self.send_run(speed,self.steerAngle)
 
     def stop(self):
-        self.send_stop(self.pyboard)
+        self.send_stop()

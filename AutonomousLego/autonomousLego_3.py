@@ -25,7 +25,7 @@ import importlib.util
 
 from pyboard import Pyboard
 
-from motionLego import MotionLego
+from motionLego_3 import MotionLego
 device = '/dev/ttyACM0'
 baudrate = 115200
 wait = 0
@@ -227,17 +227,12 @@ while True:
 
             # Draw label
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
-
-            current_time = time.time() 
-            if current_time - last_motion_time > 1:
-                if (object_name == 'orange'):
-                    found = True
-                    motionLego.forward(360)
-                    last_motion_time = current_time
-                elif (object_name == 'person'):
-                    ound = True
-                    motionLego.stop()
-                    last_motion_time = current_time
+            if (object_name == 'orange'):
+                found = True
+                pyb.execfile("run.py")
+            elif (object_name == 'person'):
+                found = True
+                motionLego.stop()
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window

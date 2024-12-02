@@ -24,12 +24,12 @@ from threading import Thread
 import importlib.util
 
 from pyboard import Pyboard
-
-from motionLego_3 import MotionLego
 device = '/dev/ttyACM0'
 baudrate = 115200
 wait = 0
 
+current_time = time.time()
+last_motion_time = current_time
 
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -177,6 +177,8 @@ freq = cv2.getTickFrequency()
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 
+
+
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
 
@@ -209,8 +211,6 @@ while True:
 
     pyb = Pyboard(device, baudrate, wait)
     pyb.enter_raw_repl()
-
-    motionLego = MotionLego(pyb)
     
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
@@ -227,18 +227,22 @@ while True:
 
             # Draw label
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
-            if (object_name == 'orange'):
-                found = True
-                pyb.execfile("run.py")
-            elif (object_name == 'person'):
-                found = True
-                motionLego.stop()
+            
+            current_time = time.time()
+
+            if current_time - last_motion_time > 1 :
+                if (object_name == 'person'):
+                    found = True
+                    pyb.execfile("turn.py")
+                    print("Run 1 Time")
+                    print(current_time)
+                    last_motion_time = current_time
+                
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
             cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
             cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
-
     # Draw framerate in corner of frame
     cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 

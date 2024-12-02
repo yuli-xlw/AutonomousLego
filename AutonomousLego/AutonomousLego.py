@@ -30,6 +30,8 @@ device = '/dev/ttyACM0'
 baudrate = 115200
 wait = 0
 
+current_time = time.time()
+last_motion_time = current_time
 
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -210,7 +212,7 @@ while True:
     pyb = Pyboard(device, baudrate, wait)
     pyb.enter_raw_repl()
 
-    motionLego = MotionLego(pyb)
+    motionLego = MotionLego()#pyb)
     
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
@@ -229,7 +231,11 @@ while True:
             object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
 
             current_time = time.time() 
-            if current_time - last_motion_time > 1:
+            if current_time - last_motion_time > 1 :
+                print("Run 1 time")
+
+                print(current_time)
+                
                 if (object_name == 'orange'):
                     found = True
                     motionLego.forward(360)
@@ -238,12 +244,14 @@ while True:
                     ound = True
                     motionLego.stop()
                     last_motion_time = current_time
+                
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
             cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
             cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
+            
     # Draw framerate in corner of frame
     cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 

@@ -12,8 +12,8 @@ class MotionLego:
 
     WHEEL_CIRCUMFERENCE = 17.5
 
-    def __init__(self, Pyboard):
-        self.pyboard = Pyboard
+    def __init__(self):#, Pyboard):
+        #self.pyboard = Pyboard
         self.pyboard.enter_raw_repl()
         command = f"""\
 import motor, motor_pair

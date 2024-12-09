@@ -179,6 +179,11 @@ freq = cv2.getTickFrequency()
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 
+pyb = Pyboard(device, baudrate, wait)
+pyb.enter_raw_repl()
+
+motionLego = MotionLego()#pyb)
+
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
 
@@ -208,11 +213,6 @@ while True:
     boxes = interpreter.get_tensor(output_details[boxes_idx]['index'])[0] # Bounding box coordinates of detected objects
     classes = interpreter.get_tensor(output_details[classes_idx]['index'])[0] # Class index of detected objects
     scores = interpreter.get_tensor(output_details[scores_idx]['index'])[0] # Confidence of detected objects
-
-    pyb = Pyboard(device, baudrate, wait)
-    pyb.enter_raw_repl()
-
-    motionLego = MotionLego()#pyb)
     
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):

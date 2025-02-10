@@ -232,17 +232,19 @@ while True:
 
             current_time = time.time() 
             if current_time - last_motion_time > 1 :
-                print("Run 1 time")
+                #print("Run 1 time")
 
-                print(current_time)
+                #print(current_time)
                 
                 if (object_name == 'orange'):
                     found = True
-                    motionLego.forward(360)
+                    motionLego.forward(10)
+
                     last_motion_time = current_time
                 elif (object_name == 'person'):
                     ound = True
                     motionLego.stop()
+                    
                     last_motion_time = current_time
                 
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'

@@ -11,6 +11,7 @@ class MotionLego:
     pyboard = Pyboard(device, baudrate, wait)
 
     WHEEL_CIRCUMFERENCE = 17.5
+    distanceSensor = 0
     
 
     def __init__(self):#, Pyboard):
@@ -32,15 +33,15 @@ runloop.run(main())
     def degreesForDistance(self,distance_cm):
         return int((distance_cm/self.WHEEL_CIRCUMFERENCE) * 360)
 
-    def send_run(self, distance = 0, steering = 0, velocity = 600, acceleration = 1000, deceleration = 1000, obstacle = 100): 
+    def send_run(self, distance = 0, steering = 0, velocity = 600, acceleration = 1000, deceleration = 1000, distanceLimite = 100): 
         iDegrees = int(self.degreesForDistance(distance))
         iSteering = int(steering)
         iVelocity = int(velocity)
         iAcceleration = int(acceleration)
         iDeceleration = int(deceleration)
-        iObstacle = int(obstacle)
+        iDistanceLimite = int(distanceLimite)
         command = f"""\
-while distance_sensor.distance(port.C) >= {iObstacle}:
+while distance_sensor.distance(port.C) >= {iDistanceLimite}:
     motor_pair.move_for_degrees(motor_pair.PAIR_1, {iDegrees}, {iSteering}, velocity={iVelocity}, stop = motor.BRAKE, acceleration={iAcceleration}, deceleration={iDeceleration})
     """
         self.pyboard.exec(command)
@@ -56,3 +57,10 @@ motor_pair.stop(motor_pair.PAIR_1)
 
     def stop(self):
         self.send_stop()
+
+#    def get_distance_sensor(self):
+#        iDistanceSensor = self.distanceSensor
+#        command = f"""\
+#{iDistanceSensor} = distance_sensor.distance(port.C)
+#    """
+#        return iDistanceSensor

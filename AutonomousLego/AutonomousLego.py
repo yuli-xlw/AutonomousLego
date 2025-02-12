@@ -235,7 +235,7 @@ while True:
                 #print("Run 1 time")
 
                 #print(current_time)
-                
+                #print(motionLego.getDistanceSensor())
                 if (object_name == 'orange'):
                     found = True
                     motionLego.forward(10)

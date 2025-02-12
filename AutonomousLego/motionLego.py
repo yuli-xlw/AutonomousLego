@@ -58,7 +58,7 @@ motor_pair.stop(motor_pair.PAIR_1)
     def stop(self):
         self.send_stop()
 
-#    def get_distance_sensor(self):
+#    def getDistanceSensor(self):
 #        iDistanceSensor = self.distanceSensor
 #        command = f"""\
 #{iDistanceSensor} = distance_sensor.distance(port.C)

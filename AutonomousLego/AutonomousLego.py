@@ -225,25 +225,25 @@ while True:
             ymax = int(min(imH,(boxes[i][2] * imH)))
             xmax = int(min(imW,(boxes[i][3] * imW)))
             
-            # 计算目标面积（bounding box面积）
+            # Calculate the target area (bounding box area)
             object_area = (xmax - xmin) * (ymax - ymin)
 
-            # 计算目标中心坐标
+            # Calculate the target center coordinates
             object_center_x = (xmin + xmax) // 2
             object_center_y = (ymin + ymax) // 2
 
-            # 计算相对于图像中心的偏移量
+            # Calculate the offset relative to the center of the image
             offset_x = object_center_x - (imW // 2)
             offset_y = object_center_y - (imH // 2)
 
-            # 在图像上绘制目标中心和与图像中心的连线（可选）
+            #Draw the target center and the connection to the image center (optional)
             cv2.circle(frame, (object_center_x, object_center_y), 5, (0, 0, 255), -1)
             cv2.line(frame, (imW // 2, imH // 2), (object_center_x, object_center_y), (0, 0, 255), 2)
 
-            # 输出目标面积及偏移量（用于调试或后续决策）
-            #print("目标面积:", object_area, "偏移量 (x, y):", offset_x, offset_y)
+            # Output target area and offset (for debugging or subsequent decision making)
+            #print("Target area:", object_area, "Offset (x, y):", offset_x, offset_y)
 
-            # 根据目标面积判断距离（阈值根据实际情况调整）
+            #Judge distance based on target area (threshold adjustment based on actual conditions)
 
             cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
@@ -260,11 +260,13 @@ while True:
                     found = True
                     #motionLego.forward(10)
 
-                    if object_area < 5000:
-                        #print("目标较远")
-                        motionLego.forward_steering(5,offset_x)
+                    print("Target area:", object_area, "Offset (x, y):", offset_x, offset_y)
+
+                    if object_area <= 20000:
+                        print("The object is far")
+                        motionLego.forward_steering(10,((offset_x/255)*100))
                     elif object_area > 20000:
-                        #print("目标较近")
+                        print("The object is closer")
                         motionLego.stop()
 
                     last_motion_time = current_time

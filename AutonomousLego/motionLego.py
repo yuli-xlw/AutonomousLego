@@ -55,6 +55,9 @@ motor_pair.stop(motor_pair.PAIR_1)
     def forward(self,distance):
         self.send_run(distance)
 
+    def forward_steering(self,distance,steering):
+        self.send_run(distance,steering)
+
     def stop(self):
         self.send_stop()
 

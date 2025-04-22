@@ -225,7 +225,6 @@ while True:
             ymax = int(min(imH,(boxes[i][2] * imH)))
             xmax = int(min(imW,(boxes[i][3] * imW)))
             
-            # ========== 新增计算区域 ==========
             # 计算边界框的宽高和面积
             box_width = xmax - xmin
             box_height = ymax - ymin
@@ -243,9 +242,8 @@ while True:
             
             # 计算面积占比（相对于整个画面）
             area_ratio = box_area / (imW * imH)
-            # ========== 新增计算结束 ==========
 
-            # 绘制检测框（原有代码不变）
+            # 绘制检测框
             cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
             object_name = labels[int(classes[i])]
 
@@ -258,7 +256,6 @@ while True:
                 offset_y
             )
 
-            # ========== 新增运动控制逻辑 ==========
             current_time = time.time() 
             if current_time - last_motion_time > 1 :
                 # 橙子控制逻辑
@@ -272,24 +269,23 @@ while True:
                         offset_threshold = imW * 0.15
                         
                         if offset_x < -offset_threshold:
-                            motionLego.forward_steering(10,((offset_x/255)*100))
+                            motionLego.forward_steering(10,((offset_x/255)*50))
                             print("Adjusting left for centering")
                         elif offset_x > offset_threshold:
-                            motionLego.forward_steering(10,((offset_x/255)*100))
+                            motionLego.forward_steering(10,((offset_x/255)*50))
                             print("Adjusting right for centering")
                         else:
-                            motionLego.forward(15)
+                            motionLego.forward(10)
                             print("Moving forward")
                     
                     last_motion_time = current_time
                 
                 # 人物控制逻辑
-                elif (object_name == 'person'):
+                elif (object_name == 'apple'):
                     # 检测到人物立即停止
                     motionLego.stop()
                     print("Person detected, emergency stop")
                     last_motion_time = current_time
-            # ========== 新增逻辑结束 ==========
 
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size

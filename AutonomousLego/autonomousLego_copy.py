@@ -225,30 +225,30 @@ while True:
             ymax = int(min(imH,(boxes[i][2] * imH)))
             xmax = int(min(imW,(boxes[i][3] * imW)))
             
-            # 计算边界框的宽高和面积
+            # Calculate the width, height and area of ​​the bounding box
             box_width = xmax - xmin
             box_height = ymax - ymin
             box_area = box_width * box_height
             
-            # 计算物体中心坐标
+            # Calculate the center coordinates of the object
             center_x = (xmin + xmax) // 2
             center_y = (ymin + ymax) // 2
             
-            # 计算相对于画面中心的偏移量
+            # Calculate the offset relative to the center of the screen
             frame_center_x = imW // 2
             frame_center_y = imH // 2
             offset_x = center_x - frame_center_x
             offset_y = center_y - frame_center_y
             
-            # 计算面积占比（相对于整个画面）
+            # Calculate area ratio
             area_ratio = box_area / (imW * imH)
 
-            # 绘制检测框
+            # Draw the detection box
             cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
             object_name = labels[int(classes[i])]
 
-            # 更新标签显示信息
-            label = '%s: %d%% Area: %.2f%% Offset: (%d,%d)' % (  # 修改了标签显示
+            # Update label display information
+            label = '%s: %d%% Area: %.2f%% Offset: (%d,%d)' % (
                 object_name, 
                 int(scores[i]*100),
                 area_ratio * 100,
@@ -257,16 +257,15 @@ while True:
             )
 
             current_time = time.time() 
-            if current_time - last_motion_time > 1 :
-                # 橙子控制逻辑
+            if current_time - last_motion_time > 0.5 :
+                # Target control logic
                 if (object_name == 'orange'):
-                    # 面积阈值（占画面比例的10%）
-                    if area_ratio > 0.1:
+                    # Area threshold
+                    if area_ratio > 0.25:
                         motionLego.stop()
                         print("Object is close enough, stopping")
                     else:
-                        # 水平偏移控制阈值（画面宽度的15%）
-                        offset_threshold = imW * 0.15
+                        # Horizontal offset control threshold
                         
                         if offset_x < -offset_threshold:
                             motionLego.forward_steering(10,((offset_x/255)*50))
@@ -280,9 +279,8 @@ while True:
                     
                     last_motion_time = current_time
                 
-                # 人物控制逻辑
-                elif (object_name == 'apple'):
-                    # 检测到人物立即停止
+                # Target control logic
+                elif (object_name == 'person'):
                     motionLego.stop()
                     print("Person detected, emergency stop")
                     last_motion_time = current_time

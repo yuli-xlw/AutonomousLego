@@ -142,5 +142,5 @@ dmypy.json
 config.ini
 
 Python_Example/
-autonomousLego_Old.py
-autonomousLego_MultithreadTest.py
+AutonomousLego/autonomousLego_MultithreadTest.py
+AutonomousLego/autonomousLego_Old.py

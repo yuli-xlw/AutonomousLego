@@ -225,57 +225,66 @@ while True:
             ymax = int(min(imH,(boxes[i][2] * imH)))
             xmax = int(min(imW,(boxes[i][3] * imW)))
             
-            # Calculate the target area (bounding box area)
-            object_area = (xmax - xmin) * (ymax - ymin)
+            # Calculate the width, height and area of ​​the bounding box
+            box_width = xmax - xmin
+            box_height = ymax - ymin
+            box_area = box_width * box_height
+            
+            # Calculate the center coordinates of the object
+            center_x = (xmin + xmax) // 2
+            center_y = (ymin + ymax) // 2
+            
+            # Calculate the offset relative to the center of the screen
+            frame_center_x = imW // 2
+            frame_center_y = imH // 2
+            offset_x = center_x - frame_center_x
+            offset_y = center_y - frame_center_y
+            
+            # Calculate area ratio
+            area_ratio = box_area / (imW * imH)
 
-            # Calculate the target center coordinates
-            object_center_x = (xmin + xmax) // 2
-            object_center_y = (ymin + ymax) // 2
-
-            # Calculate the offset relative to the center of the image
-            offset_x = object_center_x - (imW // 2)
-            offset_y = object_center_y - (imH // 2)
-
-            #Draw the target center and the connection to the image center (optional)
-            cv2.circle(frame, (object_center_x, object_center_y), 5, (0, 0, 255), -1)
-            cv2.line(frame, (imW // 2, imH // 2), (object_center_x, object_center_y), (0, 0, 255), 2)
-
-            # Output target area and offset (for debugging or subsequent decision making)
-            #print("Target area:", object_area, "Offset (x, y):", offset_x, offset_y)
-
-            #Judge distance based on target area (threshold adjustment based on actual conditions)
-
+            # Draw the detection box
             cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
+            object_name = labels[int(classes[i])]
 
-            # Draw label
-            object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+            # Update label display information
+            label = '%s: %d%% Area: %.2f%% Offset: (%d,%d)' % (
+                object_name, 
+                int(scores[i]*100),
+                area_ratio * 100,
+                offset_x,
+                offset_y
+            )
 
             current_time = time.time() 
-            if current_time - last_motion_time > 1 :
-                #print("Run 1 time")
-
-                #print(current_time)
-                #print(motionLego.getDistanceSensor())
+            if current_time - last_motion_time > 0.5 :
+                # Target control logic
                 if (object_name == 'orange'):
-                    found = True
-                    #motionLego.forward(10)
-
-                    print("Target area:", object_area, "Offset (x, y):", offset_x, offset_y)
-
-                    if object_area <= 20000:
-                        print("The object is far")
-                        motionLego.forward_steering(10,((offset_x/255)*100))
-                    elif object_area > 20000:
-                        print("The object is closer")
+                    # Area threshold
+                    if area_ratio > 0.25:
                         motionLego.stop()
-
-                    last_motion_time = current_time
-                elif (object_name == 'person'):
-                    ound = True
-                    motionLego.stop()
+                        print("Object is close enough, stopping")
+                    else:
+                        # Horizontal offset control threshold
+                        
+                        if offset_x < -offset_threshold:
+                            motionLego.forward_steering(10,((offset_x/255)*50))
+                            print("Adjusting left for centering")
+                        elif offset_x > offset_threshold:
+                            motionLego.forward_steering(10,((offset_x/255)*50))
+                            print("Adjusting right for centering")
+                        else:
+                            motionLego.forward(10)
+                            print("Moving forward")
                     
                     last_motion_time = current_time
                 
+                # Target control logic
+                elif (object_name == 'person'):
+                    motionLego.stop()
+                    print("Person detected, emergency stop")
+                    last_motion_time = current_time
+
             label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
             labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
             label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window

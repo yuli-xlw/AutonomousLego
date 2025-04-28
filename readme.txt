@@ -42,5 +42,6 @@ python cam2Lego.py --modeldir=Sample_TFLite_model --resolution=720x480 --edgetpu
 Note that the wiggle.py file gets sent to the Lego robot each time a person
 enters the frame.
 
-
+cd ~/Python/AutonomousLego
+python autonomousLego.py --modeldir=Sample_TFLite_model --resolution=720x480 --edgetpu
 

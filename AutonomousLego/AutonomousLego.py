@@ -33,6 +33,8 @@ wait = 0
 current_time = time.time()
 last_motion_time = current_time
 
+###Object Recognition###
+
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
 class VideoStream:
@@ -255,7 +257,8 @@ while True:
                 offset_x,
                 offset_y
             )
-
+            
+            ###Decision###
             current_time = time.time() 
             if current_time - last_motion_time > 0.5 :
                 # Target control logic

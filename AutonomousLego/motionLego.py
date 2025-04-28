@@ -7,6 +7,7 @@ baudrate = 115200 # This is the standard board rate to communicate with the Lego
 device = '/dev/ttyACM0' 
 wait= 0
 
+###Execution###
 class MotionLego:
     pyboard = Pyboard(device, baudrate, wait)
 

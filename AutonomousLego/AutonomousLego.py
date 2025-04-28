@@ -33,7 +33,7 @@ wait = 0
 current_time = time.time()
 last_motion_time = current_time
 
-###Object Recognition###
+
 
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -186,6 +186,8 @@ pyb.enter_raw_repl()
 
 motionLego = MotionLego()#pyb)
 
+###Object Recognition###
+
 #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
 while True:
 
@@ -257,7 +259,7 @@ while True:
                 offset_x,
                 offset_y
             )
-            
+
             ###Decision###
             current_time = time.time() 
             if current_time - last_motion_time > 0.5 :
@@ -270,6 +272,8 @@ while True:
                     else:
                         # Horizontal offset control threshold
                         
+                        ###Execution###
+
                         if offset_x < -offset_threshold:
                             motionLego.forward_steering(10,((offset_x/255)*50))
                             print("Adjusting left for centering")
